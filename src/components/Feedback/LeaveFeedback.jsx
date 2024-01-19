@@ -1,56 +1,49 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import Section from 'components/Section/Section';
 import FeedbackOptions from './FeedbackOptions/FeedbackOptions';
 import Statistics from './Statistics/Statistics';
 
-class LeaveFeedback extends Component {
-  static defaultOptionButtons = ['good', 'neutral', 'bad'];
+const defaultOptionButtons = ['good', 'neutral', 'bad'];
 
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
-  };
+const LeaveFeedback = () => {
+  const [feedbacks, setFeedbacks] = useState({ good: 0, neutral: 0, bad: 0 });
 
-  handleClick = e => {
-    this.setState(prevState => {
+  const handleClick = e => {
+    setFeedbacks(prevFeedbacks => {
       return {
-        [e.target.name]: prevState[e.target.name] + 1,
+        ...prevFeedbacks,
+        [e.target.name]: prevFeedbacks[e.target.name] + 1,
       };
     });
   };
 
-  totalFedbacks = () => {
-    return Object.values(this.state).reduce((acc, val) => acc + val, 0);
+  const totalFedbacks = () => {
+    return Object.values(feedbacks).reduce((acc, val) => acc + val, 0);
   };
 
-  positivePercentage = () => {
-    return Number(((this.state.good / this.totalFedbacks()) * 100).toFixed(2));
+  const positivePercentage = () => {
+    return Number(((feedbacks.good / totalFedbacks()) * 100).toFixed(2));
   };
 
-  render() {
-    const buttons = LeaveFeedback.defaultOptionButtons;
-    const { good, neutral, bad } = this.state;
-    const totalFedbacks = this.totalFedbacks();
-    const positivePercentage = this.positivePercentage();
-
-    return (
-      <>
-        <Section title="Please leave Feedback">
-          <FeedbackOptions buttons={buttons} handleFn={this.handleClick} />
-        </Section>
-        <Section title="Statistics">
-          <Statistics
-            good={good}
-            bad={bad}
-            neutral={neutral}
-            total={totalFedbacks}
-            positivePercentage={positivePercentage}
-          />
-        </Section>
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <Section title="Please leave Feedback">
+        <FeedbackOptions
+          buttons={defaultOptionButtons}
+          handleFn={handleClick}
+        />
+      </Section>
+      <Section title="Statistics">
+        <Statistics
+          good={feedbacks.good}
+          bad={feedbacks.bad}
+          neutral={feedbacks.neutral}
+          total={totalFedbacks()}
+          positivePercentage={positivePercentage()}
+        />
+      </Section>
+    </>
+  );
+};
 
 export default LeaveFeedback;
